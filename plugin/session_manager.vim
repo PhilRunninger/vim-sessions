@@ -1,3 +1,7 @@
+set sessionoptions-=options
+set sessionoptions-=help
+set sessionoptions-=blank
+
 augroup SessionManager
     autocmd!
     autocmd VimLeave * call VimLeave()

@@ -53,4 +53,4 @@ endfunction
 
 " Commands for setting and unsetting the session name
 command! -nargs=1 SetSession :let g:SessionName = "<args>"
-command! -nargs=0 UnsetSession :let g:SessionName = ""
+command! -nargs=0 UnsetSession :unlet g:SessionName

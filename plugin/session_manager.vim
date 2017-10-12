@@ -48,7 +48,7 @@ function! NumberChoices(key, val)
 endfunction
 
 function! SessionNameStatusLineFlag()
-    return exists("g:SessionName") ? " Session: " . g:SessionName . ' ' : ''
+    return (exists("g:SessionName") && g:SessionName != "") ? " Session: " . g:SessionName . ' ' : ''
 endfunction
 
 " Commands for setting and unsetting the session name

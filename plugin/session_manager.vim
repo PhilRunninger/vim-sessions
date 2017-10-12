@@ -8,8 +8,13 @@ augroup SessionManager
     autocmd VimEnter * call VimEnter()
 augroup END
 
-set sessionoptions-=options
-let g:PathToSessions = $VIMHOME . "/tmp/sessions"
+if !exists("g:PathToSessions")
+    if has("win32") || has("win64")
+        let g:PathToSessions = $HOME . "/vimfiles/sessions"
+    else
+        let g:PathToSessions = $HOME . "/.vim/sessions"
+    endif
+endif
 
 function! VimLeave()
     if exists("g:SessionName") && g:SessionName != ""

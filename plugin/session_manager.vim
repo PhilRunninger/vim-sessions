@@ -6,17 +6,17 @@ augroup SessionManager
     autocmd VimEnter * call VimEnter()
 augroup END
 
-if !exists("g:PathToSessions")
+if !exists("g:pathToSessions")
     if has("win32") || has("win64")
-        let g:PathToSessions = $HOME . "/vimfiles/sessions"
+        let g:pathToSessions = $HOME . "/vimfiles/sessions"
     else
-        let g:PathToSessions = $HOME . "/.vim/sessions"
+        let g:pathToSessions = $HOME . "/.vim/sessions"
     endif
 endif
 
 function! VimLeave()
-    if exists("g:SessionName") && g:SessionName != ""
-        exe "mksession! " . g:PathToSessions . '/' . g:SessionName . '.vim'
+    if exists("g:sessionName") && g:sessionName != ""
+        exe "mksession! " . g:pathToSessions . '/' . g:sessionName . '.vim'
     endif
 endfunction
 
@@ -27,28 +27,25 @@ function! VimEnter()
 endfunction
 
 function! LoadASession()
-    let session_files = glob(g:PathToSessions . "/*.vim", 0, 1)
+    let session_files = glob(g:pathToSessions . "/*.vim", 0, 1)
     if len(session_files) > 0
         let session_names = map(copy(session_files), 'fnamemodify(v:val, ":t:r")')
-        let s:num = 0
-        let choices = map(copy(session_names), function('NumberChoices'))
+        let choices=[]
+        for session_name in session_names
+            call add(choices, printf("%5d:  %s", len(choices)+1, session_name))
+        endfor
         let session_num = inputlist(insert(choices, 'Saved Sessions --------→', 0))
         if session_num > 0
             execute "source " . session_files[session_num-1]
-            let g:SessionName = session_names[session_num-1]
+            let g:sessionName = session_names[session_num-1]
         endif
     endif
 endfunction
 
-function! NumberChoices(key, val)
-    let s:num = s:num + 1
-    return  printf("%5d:  %s", s:num, a:val)
-endfunction
-
 function! SessionNameStatusLineFlag()
-    return (exists("g:SessionName") && g:SessionName != "") ? " Session: " . g:SessionName . ' ' : ''
+    return (exists("g:sessionName") && g:sessionName != "") ? " Session: " . g:sessionName . ' ' : ''
 endfunction
 
 " Commands for setting and unsetting the session name
-command! -nargs=1 SetSession :let g:SessionName = "<args>"
-command! -nargs=0 UnsetSession :unlet g:SessionName
+command! -nargs=1 SetSession :let g:sessionName = "<args>"
+command! -nargs=0 UnsetSession :unlet g:sessionName

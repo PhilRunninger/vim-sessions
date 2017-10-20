@@ -31,10 +31,10 @@ function! VimEnter()
             for session_name in session_names
                 call add(choices, printf("%5d:  %s", len(choices), session_name))
             endfor
-            let session_num = inputlist(choices)
-            if session_num > 0
-                execute "source " . session_files[session_num-1]
-                let g:sessionName = session_names[session_num-1]
+            let selection = inputlist(choices)
+            if selection > 0
+                execute "source " . session_files[selection-1]
+                let g:sessionName = session_names[selection-1]
             endif
         endif
     endif

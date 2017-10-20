@@ -1,11 +1,5 @@
 set sessionoptions-=options
 
-augroup SessionManager
-    autocmd!
-    autocmd VimLeave * call VimLeave()
-    autocmd VimEnter * call VimEnter()
-augroup END
-
 if !exists("g:pathToSessions")
     if has("win32") || has("win64")
         let g:pathToSessions = $HOME . "/vimfiles/sessions"
@@ -13,6 +7,16 @@ if !exists("g:pathToSessions")
         let g:pathToSessions = $HOME . "/.vim/sessions"
     endif
 endif
+
+" Commands for setting and unsetting the session name
+command! -nargs=1 SetSession :let g:sessionName = "<args>"
+command! -nargs=0 UnsetSession :unlet g:sessionName
+
+augroup SessionManager
+    autocmd!
+    autocmd VimLeave * call VimLeave()
+    autocmd VimEnter * call VimEnter()
+augroup END
 
 function! VimLeave()
     if exists("g:sessionName") && g:sessionName != ""
@@ -45,7 +49,3 @@ endfunction
 function! SessionNameStatusLineFlag()
     return (exists("g:sessionName") && g:sessionName != "") ? " Session: " . g:sessionName . ' ' : 'Use :SetSession to create a session.'
 endfunction
-
-" Commands for setting and unsetting the session name
-command! -nargs=1 SetSession :let g:sessionName = "<args>"
-command! -nargs=0 UnsetSession :unlet g:sessionName

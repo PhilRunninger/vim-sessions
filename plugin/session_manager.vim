@@ -24,7 +24,9 @@ function! VimEnter()
     if argc() == 0
         let session_files = glob(g:pathToSessions . "/*.vim", 0, 1)
         if len(session_files) > &lines - 2
-            echoerr 'Too many session files! Clean up your session folder: ' . g:pathToSessions
+            echohl ErrorMsg
+            echomsg 'Too many session files! Clean your sessions folder: ' . g:pathToSessions
+            echohl None
         elseif len(session_files) > 0
             let session_names = map(copy(session_files), 'fnamemodify(v:val, ":t:r")')
             let choices=['Saved Sessions --------→']

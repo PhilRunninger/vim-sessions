@@ -30,11 +30,11 @@ function! LoadASession()
     let session_files = glob(g:pathToSessions . "/*.vim", 0, 1)
     if len(session_files) > 0
         let session_names = map(copy(session_files), 'fnamemodify(v:val, ":t:r")')
-        let choices=[]
+        let choices=['Saved Sessions --------→']
         for session_name in session_names
-            call add(choices, printf("%5d:  %s", len(choices)+1, session_name))
+            call add(choices, printf("%5d:  %s", len(choices), session_name))
         endfor
-        let session_num = inputlist(insert(choices, 'Saved Sessions --------→', 0))
+        let session_num = inputlist(choices)
         if session_num > 0
             execute "source " . session_files[session_num-1]
             let g:sessionName = session_names[session_num-1]

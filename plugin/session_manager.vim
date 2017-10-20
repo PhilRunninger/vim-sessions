@@ -43,7 +43,7 @@ function! LoadASession()
 endfunction
 
 function! SessionNameStatusLineFlag()
-    return (exists("g:sessionName") && g:sessionName != "") ? " Session: " . g:sessionName . ' ' : ''
+    return (exists("g:sessionName") && g:sessionName != "") ? " Session: " . g:sessionName . ' ' : 'Use :SetSession to create a session.'
 endfunction
 
 " Commands for setting and unsetting the session name

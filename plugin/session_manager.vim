@@ -15,7 +15,7 @@ command! -nargs=0 UnsetSession :unlet g:sessionName
 augroup SessionManager
     autocmd!
     autocmd VimLeave * call VimLeave()
-    autocmd VimEnter * call VimEnter()
+    autocmd VimEnter * nested call VimEnter()
 augroup END
 
 function! VimLeave()

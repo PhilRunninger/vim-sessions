@@ -9,22 +9,23 @@ if !exists("g:pathToSessions")
 endif
 
 " Commands for setting and unsetting the session name
+command! -nargs=0 OpenSession :call OpenSession()
 command! -nargs=1 SetSession :let g:sessionName = "<args>"
 command! -nargs=0 UnsetSession :unlet g:sessionName
 
 augroup SessionManager
     autocmd!
-    autocmd VimLeave * call VimLeave()
-    autocmd VimEnter * nested call VimEnter()
+    autocmd VimLeave * call SaveSession()
+    autocmd VimEnter * nested call OpenSession()
 augroup END
 
-function! VimLeave()
+function! SaveSession()
     if exists("g:sessionName") && g:sessionName != ""
         exe "mksession! " . g:pathToSessions . '/' . g:sessionName . '.vim'
     endif
 endfunction
 
-function! VimEnter()
+function! OpenSession()
     if argc() == 0
         let session_files = glob(g:pathToSessions . "/*.vim", 0, 1)
         if len(session_files) > &lines - 2
@@ -39,6 +40,7 @@ function! VimEnter()
             endfor
             let selection = inputlist(choices)
             if selection > 0
+                execute "bufdo bdelete"
                 execute "source " . session_files[selection-1]
                 let g:sessionName = session_names[selection-1]
             endif

@@ -8,6 +8,10 @@ if !exists("g:pathToSessions")
     endif
 endif
 
+if !isdirectory(g:pathToSessions)
+    call mkdir(g:pathToSessions , 'p')
+endif
+
 " Commands for setting and unsetting the session name
 command! -nargs=0 OpenSession :call OpenSession()
 command! -nargs=1 SetSession :let g:sessionName = "<args>"

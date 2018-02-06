@@ -1,57 +1,46 @@
 set sessionoptions-=options
 
-if !exists("g:pathToSessions")
-    if has("win32") || has("win64")
-        let g:pathToSessions = $HOME . "/vimfiles/sessions"
-    else
-        let g:pathToSessions = $HOME . "/.vim/sessions"
-    endif
-endif
-
-if !isdirectory(g:pathToSessions)
-    call mkdir(g:pathToSessions , 'p')
-endif
-
 " Commands for setting and unsetting the session name
-command! -nargs=0 OpenSession :call OpenSession()
-command! -nargs=1 SetSession :let g:sessionName = "<args>"
-command! -nargs=0 UnsetSession :unlet g:sessionName
+command! -nargs=0 OpenSession :call OpenSession(1)
+command! -nargs=0 SaveSession :call SaveSession(1)
 
 augroup SessionManager
     autocmd!
-    autocmd VimLeave * call SaveSession()
-    autocmd VimEnter * nested call OpenSession()
+    autocmd VimLeave * call SaveSession(0)
+    autocmd VimEnter * nested call OpenSession(0)
 augroup END
 
-function! SaveSession()
-    if exists("g:sessionName") && g:sessionName != ""
-        exe "mksession! " . g:pathToSessions . '/' . g:sessionName . '.vim'
+function! SaveSession(manual)
+    if a:manual || len(g:sessionPath) > 0
+        if len(g:sessionPath) == 0
+            let g:sessionPath = split(getcwd(),'/',1)
+        endif
+        let file = join(add(copy(g:sessionPath), '.session.vim'), '/')
+        execute "mksession! " . file
     endif
 endfunction
 
-function! OpenSession()
-    if argc() == 0
-        let session_files = glob(g:pathToSessions . "/*.vim", 0, 1)
-        if len(session_files) > &lines - 2
-            echohl ErrorMsg
-            echomsg 'Too many session files! Clean your sessions folder: ' . g:pathToSessions
-            echohl None
-        elseif len(session_files) > 0
-            let session_names = map(copy(session_files), 'fnamemodify(v:val, ":t:r")')
-            let choices=['Saved Sessions --------→']
-            for session_name in session_names
-                call add(choices, printf("%5d:  %s", len(choices), session_name))
-            endfor
-            let selection = inputlist(choices)
-            if selection > 0
-                execute "bufdo bdelete"
-                execute "source " . session_files[selection-1]
-                let g:sessionName = session_names[selection-1]
+function! OpenSession(manual)
+    if argc() == 0 || a:manual
+        let g:sessionPath = split(getcwd(),'/',1)
+        while len(g:sessionPath) > 0
+            let path = join(copy(g:sessionPath), '/')
+            if filereadable(path . '/.session.vim')
+                if confirm('Use session in: ' . path, "&Yes\n&No") == 1
+                    execute "bufdo bdelete"
+                    execute "source " . path . '/.session.vim'
+                    return
+                endif
             endif
-        endif
+            call remove(g:sessionPath, -1)
+        endwhile
+    endif
+    if a:manual
+        echomsg "OpenSession..."
+        echomsg "No session files were found."
     endif
 endfunction
 
 function! SessionNameStatusLineFlag()
-    return (exists("g:sessionName") && g:sessionName != "") ? " Session: " . g:sessionName . ' ' : 'Use :SetSession to create a session.'
+    return (exists("g:sessionPath") && len(g:sessionPath) > 0) ? ' Session: ' . g:sessionPath[-1] . ' ' : ''
 endfunction

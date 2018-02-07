@@ -34,13 +34,12 @@ function! OpenSession(manual)
             endif
             call remove(g:sessionPath, -1)
         endwhile
-    endif
-    if a:manual
-        echomsg "OpenSession..."
-        echomsg "No session files were found."
+        if a:manual
+            echomsg "No session files were found."
+        endif
     endif
 endfunction
 
 function! SessionNameStatusLineFlag()
-    return (exists("g:sessionPath") && len(g:sessionPath) > 0) ? ' Session: ' . g:sessionPath[-1] . ' ' : ''
+    return (exists("g:sessionPath") && len(g:sessionPath) > 0) ? g:sessionPath[-1] : ''
 endfunction

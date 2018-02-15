@@ -11,12 +11,12 @@ augroup SessionManager
 augroup END
 
 function! SaveSession(manual)
-    if a:manual || len(g:sessionPath) > 0
-        if len(g:sessionPath) == 0
-            let g:sessionPath = split(getcwd(),'/',1)
-        endif
-        let file = join(add(copy(g:sessionPath), '.session.vim'), '/')
-        execute "mksession! " . file
+    if  a:manual && (!exists("g:sessionPath") || len(g:sessionPath) == 0)
+        let g:sessionPath = split(getcwd(),'/',1)
+    endif
+
+    if a:manual || exists("g:sessionPath")
+        execute "mksession! " . join(add(copy(g:sessionPath), '.session.vim'), '/')
     endif
 endfunction
 

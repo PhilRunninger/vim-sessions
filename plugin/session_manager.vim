@@ -11,7 +11,7 @@ augroup SessionManager
 augroup END
 
 function! SaveSession(manual)
-    if  a:manual && (!exists("g:sessionPath") || len(g:sessionPath) == 0)
+    if  a:manual && !exists("g:sessionPath")
         let g:sessionPath = split(getcwd(),'/',1)
     endif
 
@@ -34,6 +34,7 @@ function! OpenSession(manual)
             endif
             call remove(g:sessionPath, -1)
         endwhile
+        unlet g:sessionPath
         if a:manual
             echomsg "No session files were found."
         endif
@@ -41,5 +42,5 @@ function! OpenSession(manual)
 endfunction
 
 function! SessionNameStatusLineFlag()
-    return (exists("g:sessionPath") && len(g:sessionPath) > 0) ? g:sessionPath[-1] : ''
+    return exists("g:sessionPath") ? g:sessionPath[-1] : ''
 endfunction

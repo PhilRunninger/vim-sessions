@@ -1,6 +1,5 @@
 set sessionoptions-=options
 
-" Commands for setting and unsetting the session name
 command! -nargs=0 OpenSession :call OpenSession(1)
 command! -nargs=0 SaveSession :call SaveSession(1)
 

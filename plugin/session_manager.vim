@@ -1,15 +1,15 @@
 set sessionoptions-=options
 
-command! -nargs=0 OpenSession :call OpenSession(1)
-command! -nargs=0 SaveSession :call SaveSession(1)
+command! -nargs=0 OpenSession :call s:OpenSession(1)
+command! -nargs=0 SaveSession :call s:SaveSession(1)
 
 augroup SessionManager
     autocmd!
-    autocmd VimLeave * call SaveSession(0)
-    autocmd VimEnter * nested call OpenSession(0)
+    autocmd VimLeave * call <SID>SaveSession(0)
+    autocmd VimEnter * nested call <SID>OpenSession(0)
 augroup END
 
-function! SaveSession(manual)
+function! s:SaveSession(manual)
     if  a:manual && !exists("g:sessionPath")
         let g:sessionPath = split(getcwd(),'/',1)
     endif
@@ -19,7 +19,7 @@ function! SaveSession(manual)
     endif
 endfunction
 
-function! OpenSession(manual)
+function! s:OpenSession(manual)
     if argc() == 0 || a:manual
         let g:sessionPath = split(getcwd(),'/',1)
         while len(g:sessionPath) > 0

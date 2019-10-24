@@ -25,7 +25,7 @@ function! s:OpenSession(manual)
         while len(g:sessionPath) > 0
             let path = join(copy(g:sessionPath), '/')
             if filereadable(path . '/.session.vim')
-                if confirm('Use session in: ' . path, "&Yes\n&No") == 1
+                if confirm('Open session: ' . fnamemodify(path,":t"), "&Yes\n&No") == 1
                     execute "confirm bufdo bdelete"
                     execute "source " . path . '/.session.vim'
                     return

@@ -11,28 +11,24 @@ augroup END
 
 function! s:SaveSession(manual)
     if  a:manual && !exists("g:sessionPath")
-        let g:sessionPath = split(getcwd(),'/',1)
+        let g:sessionPath = getcwd()
     endif
 
     if a:manual || exists("g:sessionPath")
-        execute "mksession! " . join(add(copy(g:sessionPath), '.session.vim'), '/')
+        execute "mksession! " . g:sessionPath . '/.session.vim'
     endif
 endfunction
 
 function! s:OpenSession(manual)
     if argc() == 0 || a:manual
-        let g:sessionPath = split(getcwd(),'/',1)
-        while len(g:sessionPath) > 0
-            let path = join(copy(g:sessionPath), '/')
-            if filereadable(path . '/.session.vim')
-                if confirm('Open session: ' . fnamemodify(path,":t"), "&Yes\n&No") == 1
-                    execute "confirm bufdo bdelete"
-                    execute "source " . path . '/.session.vim'
-                    return
-                endif
+        let l:paths = map(findfile(".session.vim", getcwd().";", -1), {_,v -> fnamemodify(v,":p:h")})
+        for g:sessionPath in l:paths
+            if confirm('Open session: ' . fnamemodify(g:sessionPath,":t"), "&Yes\n&No") == 1
+                execute "confirm bufdo bdelete"
+                execute "source " . g:sessionPath . '/.session.vim'
+                return
             endif
-            call remove(g:sessionPath, -1)
-        endwhile
+        endfor
         unlet g:sessionPath
         if a:manual
             echomsg "No session files were found."
@@ -41,5 +37,5 @@ function! s:OpenSession(manual)
 endfunction
 
 function! SessionNameStatusLineFlag()
-    return exists("g:sessionPath") ? g:sessionPath[-1] : ''
+    return exists("g:sessionPath") ? fnamemodify(g:sessionPath,':t') : ''
 endfunction

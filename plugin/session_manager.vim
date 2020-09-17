@@ -29,7 +29,7 @@ function! s:OpenSession(manual)
                 return
             endif
         endfor
-        unlet g:sessionPath
+        unlet! g:sessionPath
         if a:manual
             echomsg 'No session files were found.'
         endif

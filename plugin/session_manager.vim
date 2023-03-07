@@ -15,7 +15,7 @@ function! s:SaveSession(manual)
     endif
 
     if a:manual || exists('g:sessionPath')
-        execute 'mksession! ' . g:sessionPath . '/.session.vim'
+        execute 'mksession! ' . expand(g:sessionPath . '/.session.vim')
     endif
 endfunction
 
@@ -25,7 +25,11 @@ function! s:OpenSession(manual)
         for g:sessionPath in l:paths
             if confirm('Open session: ' . fnamemodify(g:sessionPath,':t'), "&Yes\n&No") == 1
                 execute 'confirm bufdo bdelete'
-                execute 'source ' . g:sessionPath . '/.session.vim'
+                execute 'source ' . expand(g:sessionPath . '/.session.vim')
+
+                command! -nargs=0 CloseSession :call s:CloseSession()
+                command! -nargs=0 DeleteSession :call s:DeleteSession()
+
                 return
             endif
         endfor
@@ -34,6 +38,18 @@ function! s:OpenSession(manual)
             echomsg 'No session files were found.'
         endif
     endif
+endfunction
+
+function! s:CloseSession()
+    unlet! g:sessionPath
+    delcommand CloseSession
+    cunabbrev q
+endfunction
+
+function! s:DeleteSession()
+    call delete(expand(g:sessionPath . '/.session.vim'))
+    delcommand DeleteSession
+    call s:CloseSession()
 endfunction
 
 function! SessionNameStatusLineFlag()

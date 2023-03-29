@@ -15,7 +15,7 @@ function! s:SaveSession(manual)
     endif
 
     if a:manual || exists('g:sessionPath')
-        execute 'mksession! ' . g:sessionPath . '/.session.vim'
+        execute 'mksession! ' . expand(g:sessionPath . '/.session.vim')
     endif
 endfunction
 
@@ -25,7 +25,15 @@ function! s:OpenSession(manual)
         for g:sessionPath in l:paths
             if confirm('Open session: ' . fnamemodify(g:sessionPath,':t'), "&Yes\n&No") == 1
                 execute 'confirm bufdo bdelete'
-                execute 'source ' . g:sessionPath . '/.session.vim'
+                execute 'source ' . expand(g:sessionPath . '/.session.vim')
+
+                command! -nargs=0 CloseSession :call s:CloseSession()
+                command! -nargs=0 DeleteSession :call s:DeleteSession()
+
+                if get(g:, 'sessionConfirmQuit', 1) == 1
+                    cnoreabbrev <silent> q call <SID>ConfirmQuit()
+                endif
+
                 return
             endif
         endfor
@@ -33,6 +41,33 @@ function! s:OpenSession(manual)
         if a:manual
             echomsg 'No session files were found.'
         endif
+    endif
+endfunction
+
+function! s:CloseSession()
+    unlet! g:sessionPath
+    cunabbrev q
+    delcommand CloseSession
+    delcommand DeleteSession
+endfunction
+
+function! s:DeleteSession()
+    call delete(expand(g:sessionPath . '/.session.vim'))
+    call s:CloseSession()
+endfunction
+
+" Confirmation upon quitting to preserve window setup for sessions.
+function s:ConfirmQuit()
+    if tabpagenr('$') > 1 || winnr('$') > 1
+        let choice = confirm("Quit all windows and tabs?", "&Yes\n&No\n&Cancel", 1)
+        if choice == 1
+            quitall
+        elseif choice == 2
+            quit
+            echo "Tip: Use <C-w>c or :quit instead."
+        endif
+    else
+        quit
     endif
 endfunction
 

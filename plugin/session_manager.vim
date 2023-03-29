@@ -43,13 +43,13 @@ endfunction
 
 function! s:CloseSession()
     unlet! g:sessionPath
-    delcommand CloseSession
     cunabbrev q
+    delcommand CloseSession
+    delcommand DeleteSession
 endfunction
 
 function! s:DeleteSession()
     call delete(expand(g:sessionPath . '/.session.vim'))
-    delcommand DeleteSession
     call s:CloseSession()
 endfunction
 

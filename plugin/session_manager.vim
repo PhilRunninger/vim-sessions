@@ -29,7 +29,10 @@ function! s:OpenSession(manual)
 
                 command! -nargs=0 CloseSession :call s:CloseSession()
                 command! -nargs=0 DeleteSession :call s:DeleteSession()
-                cnoreabbrev <silent> q call <SID>QueryQuit()
+
+                if get(g:, 'sessionConfirmQuit', 1) == 1
+                    cnoreabbrev <silent> q call <SID>ConfirmQuit()
+                endif
 
                 return
             endif
@@ -54,14 +57,14 @@ function! s:DeleteSession()
 endfunction
 
 " Confirmation upon quitting to preserve window setup for sessions.
-function s:QueryQuit()
+function s:ConfirmQuit()
     if tabpagenr('$') > 1 || winnr('$') > 1
         let choice = confirm("Quit all windows and tabs?", "&Yes\n&No\n&Cancel", 1)
         if choice == 1
             quitall
         elseif choice == 2
             quit
-            echo "Tip: Use <C-w>c instead."
+            echo "Tip: Use <C-w>c or :quit instead."
         endif
     else
         quit

@@ -20,7 +20,7 @@ function! s:SaveSession(manual)
 endfunction
 
 function! s:OpenSession(manual)
-    if argc() == 0 || a:manual
+    if (get(g:, 'sessionAskOnStartup', 1) && argc() == 0) || a:manual
         let l:paths = map(findfile('.session.vim', getcwd().';', -1), {_,v -> fnamemodify(v,':p:h')})
         for g:sessionPath in l:paths
             if confirm('Open session: ' . fnamemodify(g:sessionPath,':t'), "&Yes\n&No") == 1

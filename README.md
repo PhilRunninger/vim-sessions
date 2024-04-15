@@ -8,27 +8,41 @@ Use your favorite plugin manager. If you don't have one, try one of these: [vim-
 
 ## Commands
 There are four commands defined by this plugin:
-* `:OpenSession` does the same search for a session file that was done at startup.
-* `:SaveSession` creates a new `.session.vim` file in the current directory, or overwrites the active session file.
+* `:OpenSession` does the same search for a session file that is done at startup.
+* `:SaveSession` creates a new `.session.vim` file in the current working directory, or rewrites the active session file.
 * `:CloseSession` stops associating the current session with the `.session.vim` file. All buffers remain open.
 * `:DeleteSession` closes the session (`:CloseSession`) and deletes the `.session.vim` file.
 
-## Disabling Startup Behavior
-By default, the plugin will ask the user on startup if no files were specified on the command line. To disable this feature, add this to your `.vimrc`:
-```vim
-let g:sessionAskOnStartup = 0
-```
+## Customization
+All customizations are done through a single dictionary variable. This is a change from the prior variables, which are now deprecated: `g:sessionAskOnStartup` and `g:sessionConfirmQuit`. The dictionary looks like this one, which shows the default values:
 
-## Quit Confirmation
-When this plugin opens a session file, the `:q` command is modified to behave differently. In order to prevent unwanted alteration of your window layout, the plugin will ask:
+```vim
+let g:SessionsSetup = {
+    \ 'askOnStartup':      1,
+    \ 'normalBuffersOnly': 0,
+    \ 'excludedFileTypes': [],
+    \ 'confirmQuit':       1
+\ }
+```
+You need not specify all keys in your `.vimrc`, just the ones you want to override. Each key's purpose is detailed below:
+
+### `askOnStartup: <boolean>`
+By default, starting vim with no file specified on the command-line will cause the plugin to search for session files. To disable this function, use `'askOnStartup': 0`.
+
+### `normalBuffersOnly: <boolean>`
+Vim will save some non-normal buffers (see `:h 'buftype'`) in session files, and provides no option to do otherwise. When these are restored, they become empty buffers. To keep only normal buffers (ones with `&buftype == ""`) in your session file, use `'normalBuffersOnly': 1`.
+
+### `excludedFileTypes: <list of filetypes>`
+Buffers of specified filetypes can be excluded from the session file. The list must contain filetypes, not file extensions, for example: `excludedFileTypes: ['markdown','vim']`. **Note:** this and the `normalBuffersOnly` setting take effect only when exiting vim, not when using the `:SaveSession` command.
+
+### `confirmQuit: <boolean>`
+This plugin modifies the `:q` command to prevent unwanted alteration of your window layout. It will ask:
 ```
 Quit all windows and tabs?
 [Y]es, (N)o, (C)ancel:
 ```
-Answering *Yes* will close all buffers and exit **vim**, *No* will close just the current window, and *Cancel* does nothing. To avoid this prompt, use `:quit` or <kbd>Ctrl-W</kbd>,<kbd>c</kbd> to close the current window, `:qa` to close all windows, or add this line to your `.vimrc` to disable the feature altogether:
-```vim
-let g:sessionConfirmQuit = 0
-```
+
+*Yes* closes all buffers and exits **vim**, *No* closes the current window, and *Cancel* does nothing. To avoid this prompt, use `:quit`, <kbd>Ctrl-W</kbd>,<kbd>c</kbd>, or `:qa`; or use `confirmQuit: 0` to disable this feature.
 
 ## Status Line
 The `SessionNameStatusLineFlag()` function returns the name of the current session. The session's name is the subdirectory in which the active `.session.vim` file exists. Use a statement like this one to display it in the statusline:

@@ -17,6 +17,7 @@ There are four commands defined by this plugin:
 All customizations are done through a single dictionary variable. This is a change from the prior variables, which are now deprecated: `g:sessionAskOnStartup` and `g:sessionConfirmQuit`. The dictionary looks like this one, which shows the default values:
 
 ```vim
+" vimscript
 let g:SessionsSetup = {
     \ 'askOnStartup':      1,
     \ 'normalBuffersOnly': 0,
@@ -24,6 +25,16 @@ let g:SessionsSetup = {
     \ 'confirmQuit':       1
 \ }
 ```
+```lua
+-- lua
+vim.g.SessionsSetup = {
+    askOnStartup =      1,
+    normalBuffersOnly = 0,
+    excludedFileTypes = {},
+    confirmQuit =       1
+\ }
+```
+
 You need not specify all keys in your `.vimrc`, just the ones you want to override. Each key's purpose is detailed below:
 
 ### `askOnStartup: <boolean>`
@@ -42,10 +53,15 @@ Quit all windows and tabs?
 [Y]es, (N)o, (C)ancel:
 ```
 
-*Yes* closes all buffers and exits **vim**, *No* closes the current window, and *Cancel* does nothing. To avoid this prompt, use `:quit`, <kbd>Ctrl-W</kbd>,<kbd>c</kbd>, or `:qa`; or use `confirmQuit: 0` to disable this feature.
+*Yes* closes all buffers and exits **vim**, *No* closes the current window, and *Cancel* does nothing. To avoid this prompt, use `:quit`, <kbd>Ctrl-W</kbd><kbd>c</kbd>, or `:qa`. Use `confirmQuit: 0` to disable this feature.
 
 ## Status Line
-The `SessionNameStatusLineFlag()` function returns the name of the current session. The session's name is the subdirectory in which the active `.session.vim` file exists. Use a statement like this one to display it in the statusline:
+The `SessionNameStatusLineFlag()` function returns the name of the current session, or an empty string if no session is being used. The session's name is the subdirectory in which the active `.session.vim` file exists. Use a statement like this one to display it in the statusline:
 ```vim
+" vimscript
 set statusline+=%{SessionNameStatusLineFlag()}
+```
+```lua
+-- lua
+vim.opt.statusline:append('%{SessionNameStatusLineFlag()}')
 ```
